@@ -1,0 +1,28 @@
+# Use a slim Python base image
+FROM python:3.11-slim
+
+# Set work directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy producers and data
+COPY producers/ ./producers/
+COPY data/ ./data/
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Default environment variables (override at runtime)
+ENV PRODUCER=producer_A.py
+ENV ROW_LIMIT=10
+
+LABEL org.opencontainers.image.title="sensor-producer" \
+      org.opencontainers.image.description="Streams sensor CSV data via selectable producer scripts" \
+      org.opencontainers.image.source="https://example.com/your-repo" \
+      org.opencontainers.image.licenses="UNLICENSED"
+
+# Run the selected producer with the provided row limit
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD [""]

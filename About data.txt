@@ -1,0 +1,119 @@
+🎯 Mission Objective
+
+Collect 10 high-quality resumes or detailed professional profiles of individuals currently or recently employed in Cybersecurity or Security Engineering roles at top companies, with 3–8 years of experience.
+The goal is to extract resume structure, phrasing, skills, and quantified achievements to serve as references for crafting my own resume.
+
+🕵️‍♂️ Target Profile Criteria
+
+Job Titles (must match at least one):
+
+Security Engineer
+
+Cybersecurity Analyst
+
+Information Security Engineer
+
+Security Operations Engineer (SOC)
+
+Cloud Security Engineer
+
+Application Security Engineer
+
+Experience Level: 3–8 years (mid-level professionals)
+
+Companies (preferred): Google, Microsoft, Meta, AWS, Cisco, Palo Alto Networks, CrowdStrike, FireEye, Check Point, IBM, Accenture, or any recognized enterprise.
+
+Locations: Global (prefer U.S., Europe, India)
+
+Publicly Available Profiles Only (LinkedIn, portfolio sites, GitHub resumes, or personal websites)
+
+🔍 Agent Task Steps
+
+Search Query Examples
+Use the following or variations:
+
+“Security Engineer resume filetype:pdf” site:linkedin.com OR site:github.io OR site:wellfound.com
+
+"Cybersecurity Analyst resume" 3–8 years experience -fresher
+
+"Security Engineer" ("profile" OR "resume") site:medium.com OR site:about.me
+
+Open and Extract
+For each identified profile/resume:
+
+✅ Name (or alias if anonymized)
+
+✅ Current Job Title
+
+✅ Company Name
+
+✅ Years of Experience
+
+✅ Technical Skills (e.g., SIEM, SOC, IDS/IPS, Cloud Security, Incident Response, etc.)
+
+✅ Tools/Frameworks (Splunk, Wireshark, ELK, MITRE ATT&CK, etc.)
+
+✅ Notable Projects / Quantified Achievements
+
+✅ Education (Degree & University)
+
+Summarize the Resume
+For each candidate, produce a structured summary in the following format:
+
+🧑‍💻 Name: [Optional or Redacted]
+🎯 Role: [Security Engineer / Analyst]
+🏢 Company: [Company Name]
+📅 Experience: [X years]
+🔧 Core Skills: [List 6–10 key skills/tools]
+🚀 Top Achievements:
+  - [Quantified project or metric-based impact, e.g. "Reduced phishing incidents by 35% using custom email filter rules."]
+  - [Another notable security project/initiative]
+🎓 Education: [Degree, University]
+
+
+Output Format
+
+Save or return results as structured JSON or Markdown list.
+
+Include direct URLs where the resume/profile was found.
+
+⚖️ Ethical & Compliance Instructions
+
+Collect only publicly available resumes or profiles.
+
+Do not attempt to access private data or gated content.
+
+Redact personally identifying details if necessary (e.g., emails, phone numbers).
+
+Focus on career-relevant insights, not personal info.
+
+🧩 Deliverable Example
+[
+  {
+    "role": "Security Engineer",
+    "company": "Google",
+    "experience": "6 years",
+    "skills": ["SIEM", "IDS/IPS", "Python", "AWS Security", "Incident Response"],
+    "achievements": [
+      "Built internal threat detection pipelines using Splunk and Python (reduced alert false positives by 25%).",
+      "Led SOC team migration to AWS CloudWatch and GuardDuty."
+    ],
+    "education": "MS in Cybersecurity, Stanford University",
+    "source_url": "https://www.linkedin.com/in/xxxxx/"
+  },
+  ...
+]
+
+🧠 Contextual Behavior
+
+The agent should:
+
+Prioritize resume phrasing, responsibility verbs, and achievement quantification.
+
+Detect patterns in how professionals describe their security projects.
+
+Avoid collecting duplicate or irrelevant data (like sales or IT support roles).
+
+If fewer than 10 are found, expand company scope while maintaining role relevance.
+
+

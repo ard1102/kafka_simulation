@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+.Python
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Build and packaging
+build/
+dist/
+pip-wheel-metadata/
+*.whl
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+*.pid
+
+# Environment files
+.env
+.env.*
+
+# Node (in case any tooling pulls it in)
+node_modules/
+
+# Docker
+docker-compose.override.yml
+
+# Keep project data tracked
+# (do NOT ignore data/sensor_data.csv)
