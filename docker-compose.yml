@@ -20,8 +20,6 @@ services:
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     ports:
       - "9092:9092"
-    volumes:
-      - kafka_kraft:/var/lib/kafka/data
     healthcheck:
       test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 >/dev/null 2>&1"]
       interval: 5s
@@ -136,6 +134,3 @@ services:
 networks:
   sensor-net:
     driver: bridge
-
-volumes:
-  kafka_kraft:
