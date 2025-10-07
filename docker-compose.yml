@@ -61,6 +61,49 @@ services:
     networks:
       - sensor-net
 
+  clickhouse-server:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-server
+    environment:
+      - CLICKHOUSE_DB=default
+      - CLICKHOUSE_USER=sensor
+      - CLICKHOUSE_PASSWORD=sensorpass
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    ports:
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native TCP interface
+    networks:
+      - sensor-net
+    volumes:
+      - ./clickhouse_setup:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    container_name: consumer
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - CLICKHOUSE_HOST=clickhouse-server
+      - CLICKHOUSE_USER=sensor
+      - CLICKHOUSE_PASSWORD=sensorpass
+      - CLICKHOUSE_DB=default
+      - KAFKA_TOPIC=sensor_data
+      - BATCH_SIZE=100
+      - FLUSH_INTERVAL_SEC=2.0
+    depends_on:
+      kafka:
+        condition: service_started
+      clickhouse-server:
+        condition: service_healthy
+    networks:
+      - sensor-net
+
 networks:
   sensor-net:
     driver: bridge
