@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  kafka:
+    image: bitnami/kafka:3.6
+    container_name: kafka
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - "9092:9092"
+    networks:
+      - sensor-net
+
+  producer-a:
+    image: sensor-producer
+    container_name: producer-a
+    environment:
+      - PRODUCER=producer_A.py
+      - ROW_LIMIT=all
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - sensor-net
+
+  producer-b:
+    image: sensor-producer
+    container_name: producer-b
+    environment:
+      - PRODUCER=producer_B.py
+      - ROW_LIMIT=all
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - sensor-net
+
+  producer-c:
+    image: sensor-producer
+    container_name: producer-c
+    environment:
+      - PRODUCER=producer_C.py
+      - ROW_LIMIT=all
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - sensor-net
+
+networks:
+  sensor-net:
+    driver: bridge
