@@ -107,7 +107,7 @@ services:
       - FLUSH_INTERVAL_SEC=2.0
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
       clickhouse-server:
         condition: service_healthy
     networks:
