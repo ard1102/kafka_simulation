@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: ClickHouse
+    type: grafana-clickhouse-datasource
+    access: proxy
+    isDefault: true
+    jsonData:
+      host: clickhouse-server
+      port: 8123
+      protocol: http
+      username: sensor
+      defaultDatabase: default
+      addCorsHeader: true
+      timeInterval: 1s
+    secureJsonData:
+      password: sensorpass

@@ -1,0 +1,59 @@
+{
+  "id": null,
+  "uid": "sensor-overview",
+  "title": "Sensor Overview",
+  "tags": ["sensors"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-10y", "to": "now" },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Temperature & Humidity Over Time",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 9},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "query": "SELECT ts, avg(temp) AS temperature, avg(humidity) AS humidity FROM default.sensor_data WHERE $__timeFilter(ts) AND device_id = '${device_id:text}' GROUP BY ts ORDER BY ts"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Live CO Level",
+      "gridPos": {"x": 0, "y": 9, "w": 12, "h": 8},
+      "targets": [
+        {
+          "refId": "B",
+          "format": "table",
+          "query": "SELECT co FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ts DESC LIMIT 1"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Motion Detected",
+      "gridPos": {"x": 12, "y": 9, "w": 12, "h": 8},
+      "targets": [
+        {
+          "refId": "C",
+          "format": "table",
+          "query": "SELECT motion FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ts DESC LIMIT 1"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "device_id",
+        "type": "textbox",
+        "current": {"text": "00:0f:00:70:91:0a", "value": "00:0f:00:70:91:0a"},
+        "query": ""
+      }
+    ]
+  }
+}

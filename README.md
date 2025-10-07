@@ -280,6 +280,105 @@ docker exec clickhouse-server clickhouse-client -q "SELECT count(*) FROM default
 docker exec clickhouse-server clickhouse-client -q "SELECT * FROM default.sensor_data ORDER BY ts DESC LIMIT 10" -u sensor --password sensorpass
 ```
 
+## Module 4: Grafana (Install, Connect to ClickHouse, Dashboards)
+
+### Add Grafana to Docker Compose
+The stack now includes Grafana with auto-provisioned ClickHouse datasource and dashboards. Credentials and provisioning are controlled via environment variables and mounted files.
+
+- Default admin credentials come from `.env`:
+  - `GRAFANA_ADMIN_USER`
+  - `GRAFANA_ADMIN_PASSWORD`
+- Grafana runs on `http://localhost:3000` and disables anonymous auth.
+- ClickHouse datasource points to `http://clickhouse-server:8123` and authenticates as `sensor/sensorpass`.
+
+### Environment Variables (.env)
+Create a `.env` file in project root:
+```
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=changeMeStrong!
+```
+
+### Bring Up Grafana
+```
+docker compose up -d grafana
+docker compose logs -f grafana
+```
+When healthy, open `http://localhost:3000` and sign in with the admin credentials.
+
+### Datasource Provisioning
+Provisioned via `grafana/provisioning/datasources/clickhouse.yml` using the official Grafana Labs ClickHouse plugin (v4+). Use `host/port/protocol` keys rather than a single `url` field:
+
+```
+apiVersion: 1
+datasources:
+  - name: ClickHouse
+    type: grafana-clickhouse-datasource
+    access: proxy
+    isDefault: true
+    jsonData:
+      host: clickhouse-server
+      port: 8123
+      protocol: http
+      username: sensor
+      defaultDatabase: default
+      addCorsHeader: true
+      timeInterval: 1s
+    secureJsonData:
+      password: sensorpass
+```
+
+Notes:
+- Inside Docker, set `host` to the ClickHouse service name (`clickhouse-server`), not `localhost`.
+- For native TCP, use `protocol: native` and `port: 9000`.
+- Plugin v4 renamed `server` to `host` and expects these keys; older `url` configs can trigger validation errors.
+
+### Dashboards
+Auto-loaded from `grafana/dashboards`. A sample dashboard `sensor_overview.json` provides:
+- Temperature & Humidity Over Time (timeseries)
+- Live CO Level (gauge)
+- Motion Detected (stat)
+
+Template variable `device_id` is a textbox; set it to one of the producer device IDs (e.g., `00:0f:00:70:91:0a`).
+
+### Test Queries (Grafana panels)
+Use these queries in panels against the ClickHouse datasource:
+```
+SELECT ts, avg(temp) AS temperature, avg(humidity) AS humidity
+FROM default.sensor_data
+WHERE $__timeFilter(ts) AND device_id = '${device_id:text}'
+GROUP BY ts
+ORDER BY ts;
+
+SELECT last_value(co)
+FROM default.sensor_data
+WHERE device_id = '${device_id:text}';
+
+SELECT last_value(motion)
+FROM default.sensor_data
+WHERE device_id = '${device_id:text}';
+```
+
+### Security and Access Controls
+- Grafana admin credentials are not hardcoded; use `.env` and strong passwords.
+- Anonymous access is disabled (`GF_AUTH_ANONYMOUS_ENABLED=false`).
+- ClickHouse authentication uses a dedicated user (`sensor`) with limited privileges.
+- For external exposure, place Grafana behind a reverse proxy with TLS and configure Grafana `GF_SERVER_ROOT_URL` and `GF_SERVER_DOMAIN`.
+
+### Troubleshooting
+- If the ClickHouse datasource fails, verify `clickhouse-server` is healthy and reachable on `8123` within the compose network.
+- Ensure the Grafana ClickHouse plugin is installed via `GF_INSTALL_PLUGINS=grafana-clickhouse-datasource`.
+- If Grafana shows "invalid server host" or an empty server field:
+  - Confirm you are using the Grafana Labs plugin (not Vertamedia).
+  - Update provisioning to use `jsonData.host/port/protocol` (remove `url`).
+  - From the Grafana container, test connectivity: `getent hosts clickhouse-server` and `curl http://clickhouse-server:8123/ping` → `Ok.`
+  - Open the datasource in UI, re-enter `host/port/protocol`, and Save & Test (the plugin migrates configs on open/save).
+
+References:
+- ClickHouse plugin config: https://clickhouse.com/docs/integrations/grafana/config
+- Grafana Labs plugin page: https://grafana.com/grafana/plugins/grafana-clickhouse-datasource/
+- Inspect Grafana logs: `docker compose logs -f grafana`.
+
+
 ## Lifecycle
 - View logs:
 ```
