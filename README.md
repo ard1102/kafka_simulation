@@ -444,6 +444,24 @@ docker compose logs -f
 docker compose down
 ```
 
+## Cleanup
+- Remove everything (containers, images, volumes, orphans) for a clean rebuild:
+```
+docker compose down --rmi all --volumes --remove-orphans
+```
+- Remove a specific container:
+```
+docker rm -f <container_name>
+```
+- Remove a specific image:
+```
+docker rmi <image_name>
+```
+- Prune unused resources (dangling images, stopped containers, networks):
+```
+docker system prune -a
+```
+
 ## Change Log (summarized from git)
 - Initialize repo and project assets (compose, entrypoint, producers, data, README)
 - Add Kafka producers and publish events to sensor_data via kafka-python
