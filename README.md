@@ -96,7 +96,8 @@ CREATE TABLE IF NOT EXISTS default.sensor_data (
   lpg       Float64,
   motion    UInt8,
   smoke     Float64,
-  temp      Float64
+  temp      Float64,
+  ingest_time DateTime64(3) DEFAULT now()
 ) ENGINE = MergeTree
 ORDER BY (device_id, ts);
 ```
@@ -104,6 +105,7 @@ ORDER BY (device_id, ts);
 Notes:
 - Timestamps (`ts`) are parsed as UTC and inserted as `DateTime64(3)`.
 - Boolean-like fields (`light`, `motion`) are stored as `UInt8` (0/1).
+ - `ingest_time` captures when the row was written to ClickHouse and defaults to the current server time if the client doesn’t supply it. The order key remains `(device_id, ts)` to preserve analytical partitioning and sorting by event time.
 
 ## Build Producer Image
 From repository root:
@@ -345,17 +347,21 @@ Use these queries in panels against the ClickHouse datasource:
 ```
 SELECT ts, avg(temp) AS temperature, avg(humidity) AS humidity
 FROM default.sensor_data
-WHERE $__timeFilter(ts) AND device_id = '${device_id:text}'
+WHERE $__timeFilter(ingest_time) AND device_id = '${device_id:text}'
 GROUP BY ts
 ORDER BY ts;
 
-SELECT last_value(co)
+SELECT co
 FROM default.sensor_data
-WHERE device_id = '${device_id:text}';
+WHERE device_id = '${device_id:text}'
+ORDER BY ingest_time DESC
+LIMIT 1;
 
-SELECT last_value(motion)
+SELECT motion
 FROM default.sensor_data
-WHERE device_id = '${device_id:text}';
+WHERE device_id = '${device_id:text}'
+ORDER BY ingest_time DESC
+LIMIT 1;
 ```
 
 ### Security and Access Controls
@@ -377,6 +383,35 @@ References:
 - ClickHouse plugin config: https://clickhouse.com/docs/integrations/grafana/config
 - Grafana Labs plugin page: https://grafana.com/grafana/plugins/grafana-clickhouse-datasource/
 - Inspect Grafana logs: `docker compose logs -f grafana`.
+
+## Real-time Dashboards and Stale Timestamps
+Some producers replay historical sensor data with past timestamps (`ts`). When Grafana panels are scoped to recent ranges (e.g., "Last 5 minutes" or "Last 24 hours"), queries against `ts` may return no rows.
+
+### The Fix: `ingest_time`
+- Add `ingest_time DateTime64(3) DEFAULT now()` to `default.sensor_data` to capture the insertion time.
+- Update the consumer to send `ingest_time = datetime.utcnow()` for explicit control (the table default covers cases when it’s omitted).
+- Change Grafana queries to filter by `ingest_time` for "current window" views while still grouping/plotting by the original `ts`.
+
+### Migration for Existing Tables
+If the table already exists, use `ALTER` to add the column and optionally backfill:
+
+```
+docker exec clickhouse-server clickhouse-client -q "ALTER TABLE default.sensor_data ADD COLUMN IF NOT EXISTS ingest_time DateTime64(3) DEFAULT now()" -u sensor --password sensorpass
+
+docker exec clickhouse-server clickhouse-client -q "ALTER TABLE default.sensor_data UPDATE ingest_time = now() WHERE ingest_time IS NULL" -u sensor --password sensorpass
+```
+
+### Order Key Guidance
+Keep `ORDER BY (device_id, ts)`. Most analytics rely on event time (`ts`) for partitioning and sorting. Use `ingest_time` for dashboard time filters and "latest" reads (e.g., `ORDER BY ingest_time DESC LIMIT 1`). If you need faster scans by `ingest_time`, consider a data-skipping index.
+
+### Consumer Mapping Details
+- `ts` is converted using `datetime.utcfromtimestamp(float(ts))` → `DateTime64(3)`
+- `ingest_time` is set to `datetime.utcnow()` and inserted alongside metrics
+- `light`, `motion` are coerced to `UInt8` (0/1)
+
+### Grafana Query Patterns
+- Time series: `WHERE $__timeFilter(ingest_time)` and `GROUP BY ts`
+- Latest values: `ORDER BY ingest_time DESC LIMIT 1`
 
 
 ## Lifecycle

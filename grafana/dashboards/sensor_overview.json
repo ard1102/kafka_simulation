@@ -7,7 +7,7 @@
   "schemaVersion": 39,
   "version": 1,
   "refresh": "10s",
-  "time": { "from": "now-10y", "to": "now" },
+  "time": { "from": "now-24h", "to": "now" },
   "panels": [
     {
       "type": "timeseries",
@@ -17,7 +17,7 @@
         {
           "refId": "A",
           "format": "time_series",
-          "query": "SELECT ts, avg(temp) AS temperature, avg(humidity) AS humidity FROM default.sensor_data WHERE $__timeFilter(ts) AND device_id = '${device_id:text}' GROUP BY ts ORDER BY ts"
+          "query": "SELECT ts, avg(temp) AS temperature, avg(humidity) AS humidity FROM default.sensor_data WHERE $__timeFilter(ingest_time) AND device_id = '${device_id:text}' GROUP BY ts ORDER BY ts;"
         }
       ]
     },
@@ -29,7 +29,7 @@
         {
           "refId": "B",
           "format": "table",
-          "query": "SELECT co FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ts DESC LIMIT 1"
+          "query": "SELECT co FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ingest_time DESC LIMIT 1;"
         }
       ]
     },
@@ -41,7 +41,7 @@
         {
           "refId": "C",
           "format": "table",
-          "query": "SELECT motion FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ts DESC LIMIT 1"
+          "query": "SELECT motion FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ingest_time DESC LIMIT 1;"
         }
       ]
     }

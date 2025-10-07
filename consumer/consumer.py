@@ -72,7 +72,7 @@ def main():
             client.execute(
                 """
                 INSERT INTO sensor_data (
-                    device_id, ts, co, humidity, light, lpg, motion, smoke, temp
+                    device_id, ts, co, humidity, light, lpg, motion, smoke, temp, ingest_time
                 ) VALUES
                 """,
                 batch,
@@ -101,6 +101,7 @@ def main():
                 int(bool(data.get("motion", False))),
                 float(data.get("smoke", 0.0)),
                 float(data.get("temp", 0.0)),
+                datetime.utcnow(),
             )
             batch.append(row)
 

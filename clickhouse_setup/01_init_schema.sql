@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS default.sensor_data (
     lpg       Float64,
     motion    UInt8,
     smoke     Float64,
-    temp      Float64
+    temp      Float64,
+    ingest_time DateTime64(3) DEFAULT now()
 ) ENGINE = MergeTree
 ORDER BY (device_id, ts);
