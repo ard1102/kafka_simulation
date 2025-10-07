@@ -65,6 +65,26 @@ docker compose restart producer-a producer-b producer-c
 ```
 - Consumer logs can be buffered; for unbuffered output, configure the command to `python -u consumer.py` in Compose and recreate the container.
 
+## Startup Sequencing & Healthchecks
+To prevent producers from entering `[DRY-RUN]` during initial startup when Kafka isn’t ready yet, the Compose file includes a Kafka healthcheck and makes producers depend on Kafka’s healthy state.
+
+- Kafka healthcheck (runs inside the broker container):
+  - `test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 >/dev/null 2>&1"]`
+  - `interval: 5s`, `timeout: 5s`, `retries: 12`, `start_period: 20s`
+- Producer services use `depends_on` for Kafka with `condition: service_healthy`.
+
+With this change:
+- `docker compose up -d` brings up Kafka, waits for health, then starts producers; manual restarts are generally unnecessary.
+- If Kafka later restarts, producers reconnect and continue sending.
+
+Optional:
+- You can make the consumer also wait on `kafka` to be healthy by adding under `consumer.depends_on`:
+```
+  kafka:
+    condition: service_healthy
+```
+The consumer already handles Kafka reconnects, but this reduces initial warnings in logs.
+
 ## Run via Docker Compose (End-to-End)
 From the project root:
 ```
@@ -148,7 +168,7 @@ Compose brings up three services (producer-a, producer-b, producer-c) that share
 ## Consumer Service
 The consumer connects to Kafka and ClickHouse, batches messages, and inserts rows.
 
-- Image: built from `consumer/Dockerfile` (`python:3.9-slim`)
+- Image: built from `consumer/Dockerfile` (`python:3.11-slim`)
 - Dependencies: `kafka-python`, `clickhouse-driver`
 - Environment variables:
   - `KAFKA_BROKER`: Kafka address (default `localhost:9092`; in compose `kafka:9092`)
