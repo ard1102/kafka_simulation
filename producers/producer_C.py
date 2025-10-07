@@ -4,6 +4,7 @@ import time
 import argparse
 import os
 import sys
+from kafka import KafkaProducer
 
 parser = argparse.ArgumentParser(description="Sensor producer A")
 
@@ -17,6 +18,12 @@ parser.add_argument(
 args = parser.parse_args()
 device = 'b8:27:eb:bf:9d:51'
 data_path = './data/sensor_data.csv'
+
+KAFKA_BROKER = os.getenv("KAFKA_BROKER", "localhost:9092")
+producer = KafkaProducer(
+    bootstrap_servers=[KAFKA_BROKER],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
 
 # Check if file exists
 if not os.path.exists(data_path):
@@ -75,5 +82,8 @@ for _, row in df.iterrows():
     json_output["device_id"] = row["device"]
     json_output["ts"] = float(row["ts"])
 
-    print(json.dumps(json_output))
+    producer.send('sensor_data', value=json_output)
+    print(f"Sent: {json.dumps(json_output)}")
     time.sleep(0.2)
+
+producer.flush()
