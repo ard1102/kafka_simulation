@@ -2,20 +2,26 @@ version: "3.8"
 
 services:
   kafka:
-    image: bitnami/kafka:3.6
+    image: confluentinc/cp-kafka:7.8.3
     container_name: kafka
     environment:
-      - KAFKA_CFG_NODE_ID=1
-      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_MODE=true
+      - CLUSTER_ID=1L6g7nGhU-eAKfL--X25wo
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_LOG_DIRS=/var/lib/kafka/data
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     ports:
       - "9092:9092"
+    volumes:
+      - kafka_kraft:/var/lib/kafka/data
     networks:
       - sensor-net
 
@@ -24,7 +30,7 @@ services:
     container_name: producer-a
     environment:
       - PRODUCER=producer_A.py
-      - ROW_LIMIT=all
+      - ROW_LIMIT=4000
       - KAFKA_BROKER=kafka:9092
     depends_on:
       - kafka
@@ -36,7 +42,7 @@ services:
     container_name: producer-b
     environment:
       - PRODUCER=producer_B.py
-      - ROW_LIMIT=all
+      - ROW_LIMIT=4000
       - KAFKA_BROKER=kafka:9092
     depends_on:
       - kafka
@@ -48,7 +54,7 @@ services:
     container_name: producer-c
     environment:
       - PRODUCER=producer_C.py
-      - ROW_LIMIT=all
+      - ROW_LIMIT=4000
       - KAFKA_BROKER=kafka:9092
     depends_on:
       - kafka
@@ -58,3 +64,6 @@ services:
 networks:
   sensor-net:
     driver: bridge
+
+volumes:
+  kafka_kraft:
