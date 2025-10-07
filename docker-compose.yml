@@ -31,6 +31,10 @@ services:
 
   producer-a:
     image: sensor-producer
+    build:
+      context: .
+      dockerfile: ./producers/dockerfile
+    pull_policy: never
     container_name: producer-a
     environment:
       - PRODUCER=producer_A.py
@@ -44,6 +48,10 @@ services:
 
   producer-b:
     image: sensor-producer
+    build:
+      context: .
+      dockerfile: ./producers/dockerfile
+    pull_policy: never
     container_name: producer-b
     environment:
       - PRODUCER=producer_B.py
@@ -57,6 +65,10 @@ services:
 
   producer-c:
     image: sensor-producer
+    build:
+      context: .
+      dockerfile: ./producers/dockerfile
+    pull_policy: never
     container_name: producer-c
     environment:
       - PRODUCER=producer_C.py
