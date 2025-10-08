@@ -1,0 +1,158 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 4,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "builderOptions": {
+            "aggregates": [],
+            "columns": [
+              {
+                "alias": "device_id",
+                "custom": false,
+                "name": "device_id",
+                "type": "String"
+              },
+              {
+                "alias": "co",
+                "custom": false,
+                "name": "co",
+                "type": "Float64"
+              },
+              {
+                "alias": "humidity",
+                "custom": false,
+                "name": "humidity",
+                "type": "Float64"
+              },
+              {
+                "alias": "light",
+                "custom": false,
+                "name": "light",
+                "type": "UInt8"
+              },
+              {
+                "alias": "motion",
+                "custom": false,
+                "name": "motion",
+                "type": "UInt8"
+              },
+              {
+                "alias": "smoke",
+                "custom": false,
+                "name": "smoke",
+                "type": "Float64"
+              }
+            ],
+            "database": "default",
+            "filters": [],
+            "groupBy": [],
+            "limit": 1000,
+            "meta": {},
+            "mode": "list",
+            "orderBy": [
+              {
+                "dir": "ASC",
+                "name": "ingest_time"
+              }
+            ],
+            "queryType": "table",
+            "table": "sensor_data"
+          },
+          "editorType": "builder",
+          "format": 1,
+          "pluginVersion": "4.11.1",
+          "query": "SELECT ts, ingest_time, device_id, motion, light, co, smoke, lpg, temp, humidity FROM default.sensor_data WHERE $__timeFilter(ingest_time) ORDER BY ingest_time DESC LIMIT 100",
+          "rawSql": "SELECT device_id, co, humidity, light, motion, smoke FROM \"default\".\"sensor_data\" ORDER BY ingest_time ASC LIMIT 1000",
+          "refId": "B"
+        }
+      ],
+      "title": "B. Recent Events (Last 24h)",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "refresh": "10s",
+  "schemaVersion": 42,
+  "tags": [
+    "sensors",
+    "current",
+    "events"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "1. Current Sensor Status & Events",
+  "uid": "current-status-and-events",
+  "version": 3
+}

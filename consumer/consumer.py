@@ -70,8 +70,8 @@ def main():
             return
         try:
             client.execute(
-                """
-                INSERT INTO sensor_data (
+                f"""
+                INSERT INTO {table_fqn} (
                     device_id, ts, co, humidity, light, lpg, motion, smoke, temp, ingest_time
                 ) VALUES
                 """,

@@ -53,3 +53,4 @@ docker-compose.override.yml
 
 # Keep project data tracked
 # (do NOT ignore data/sensor_data.csv)
+.env

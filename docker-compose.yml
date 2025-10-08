@@ -106,6 +106,7 @@ services:
       context: ./consumer
       dockerfile: Dockerfile
     container_name: consumer
+    command: ["python", "-u", "consumer.py"]
     environment:
       - KAFKA_BROKER=kafka:9092
       - CLICKHOUSE_HOST=clickhouse-server
@@ -113,8 +114,8 @@ services:
       - CLICKHOUSE_PASSWORD=sensorpass
       - CLICKHOUSE_DB=default
       - KAFKA_TOPIC=sensor_data
-      - BATCH_SIZE=100
-      - FLUSH_INTERVAL_SEC=2.0
+      - BATCH_SIZE=20
+      - FLUSH_INTERVAL_SEC=1.0
     depends_on:
       kafka:
         condition: service_healthy

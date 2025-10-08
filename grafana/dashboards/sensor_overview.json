@@ -1,59 +1,392 @@
 {
-  "id": null,
-  "uid": "sensor-overview",
-  "title": "Sensor Overview",
-  "tags": ["sensors"],
-  "timezone": "browser",
-  "schemaVersion": 39,
-  "version": 1,
-  "refresh": "10s",
-  "time": { "from": "now-24h", "to": "now" },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
   "panels": [
     {
-      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "series",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 19,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 3,
+            "pointSize": 10,
+            "scaleDistribution": {
+              "log": 2,
+              "type": "log"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "right",
+          "showLegend": false
+        },
+        "timezone": [
+          "browser"
+        ],
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "builderOptions": {
+            "aggregates": [],
+            "columns": [
+              {
+                "alias": "temp",
+                "custom": false,
+                "name": "temp",
+                "type": "Float64"
+              },
+              {
+                "alias": "humidity",
+                "custom": false,
+                "name": "humidity",
+                "type": "Float64"
+              },
+              {
+                "alias": "ingest_time",
+                "custom": false,
+                "name": "ingest_time",
+                "type": "DateTime64(3)"
+              }
+            ],
+            "database": "default",
+            "filters": [],
+            "groupBy": [],
+            "limit": 1000,
+            "meta": {},
+            "mode": "list",
+            "orderBy": [],
+            "queryType": "table",
+            "table": "sensor_data"
+          },
+          "editorType": "builder",
+          "format": 1,
+          "pluginVersion": "4.11.1",
+          "query": "SELECT ingest_time AS t, temp AS temperature, humidity AS humidity FROM default.sensor_data WHERE $__timeFilter(ingest_time) AND device_id = '${device_id:text}' ORDER BY ingest_time;",
+          "rawSql": "SELECT temp, humidity, ingest_time FROM \"default\".\"sensor_data\" LIMIT 1000",
+          "refId": "A"
+        }
+      ],
       "title": "Temperature & Humidity Over Time",
-      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 9},
-      "targets": [
-        {
-          "refId": "A",
-          "format": "time_series",
-          "query": "SELECT ts, avg(temp) AS temperature, avg(humidity) AS humidity FROM default.sensor_data WHERE $__timeFilter(ingest_time) AND device_id = '${device_id:text}' GROUP BY ts ORDER BY ts;"
-        }
-      ]
+      "type": "timeseries"
     },
     {
-      "type": "gauge",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 17,
+        "x": 0,
+        "y": 9
+      },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "builderOptions": {
+            "aggregates": [],
+            "columns": [
+              {
+                "alias": "co",
+                "custom": false,
+                "name": "co",
+                "type": "Float64"
+              },
+              {
+                "alias": "humidity",
+                "custom": false,
+                "name": "humidity",
+                "type": "Float64"
+              },
+              {
+                "alias": "lpg",
+                "custom": false,
+                "name": "lpg",
+                "type": "Float64"
+              }
+            ],
+            "database": "default",
+            "filters": [],
+            "groupBy": [],
+            "limit": 1,
+            "meta": {},
+            "mode": "aggregate",
+            "orderBy": [
+              {
+                "dir": "DESC",
+                "name": "ts"
+              }
+            ],
+            "queryType": "table",
+            "table": "sensor_data"
+          },
+          "editorType": "builder",
+          "format": 1,
+          "pluginVersion": "4.11.1",
+          "query": "SELECT co FROM default.sensor_data WHERE $__timeFilter(ingest_time) AND device_id = '${device_id:text}' ORDER BY ingest_time DESC LIMIT 1;",
+          "rawSql": "SELECT co, humidity, lpg FROM \"default\".\"sensor_data\" ORDER BY ts DESC LIMIT 1",
+          "refId": "B"
+        }
+      ],
       "title": "Live CO Level",
-      "gridPos": {"x": 0, "y": 9, "w": 12, "h": 8},
-      "targets": [
-        {
-          "refId": "B",
-          "format": "table",
-          "query": "SELECT co FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ingest_time DESC LIMIT 1;"
-        }
-      ]
+      "transparent": true,
+      "type": "gauge"
     },
     {
-      "type": "stat",
-      "title": "Motion Detected",
-      "gridPos": {"x": 12, "y": 9, "w": 12, "h": 8},
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 10000
+              },
+              {
+                "color": "orange",
+                "value": 30000
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 6,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "",
+          "limit": 10,
+          "values": true
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {
+          "titleSize": 1
+        },
+        "valueMode": "text"
+      },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
-          "refId": "C",
-          "format": "table",
-          "query": "SELECT motion FROM default.sensor_data WHERE device_id = '${device_id:text}' ORDER BY ingest_time DESC LIMIT 1;"
+          "builderOptions": {
+            "aggregates": [
+              {
+                "aggregateType": "count",
+                "column": "device_id"
+              }
+            ],
+            "columns": [
+              {
+                "alias": "device_id",
+                "custom": false,
+                "name": "device_id",
+                "type": "String"
+              }
+            ],
+            "database": "default",
+            "filters": [],
+            "groupBy": [
+              "device_id"
+            ],
+            "limit": 0,
+            "meta": {},
+            "mode": "aggregate",
+            "orderBy": [],
+            "queryType": "table",
+            "table": "sensor_data"
+          },
+          "editorType": "builder",
+          "format": 1,
+          "pluginVersion": "4.11.1",
+          "query": "SELECT ingest_time, ts, device_id, temp, humidity, co, motion FROM default.sensor_data WHERE $__timeFilter(ingest_time) ORDER BY ingest_time DESC LIMIT 200;",
+          "rawSql": "SELECT device_id, count(device_id) FROM \"default\".\"sensor_data\" GROUP BY device_id",
+          "refId": "F"
         }
-      ]
+      ],
+      "title": "Events from sensors",
+      "transparent": true,
+      "type": "bargauge"
     }
+  ],
+  "preload": false,
+  "refresh": "10s",
+  "schemaVersion": 42,
+  "tags": [
+    "sensors"
   ],
   "templating": {
     "list": [
       {
+        "current": {
+          "text": "00:0f:00:70:91:0a",
+          "value": "00:0f:00:70:91:0a"
+        },
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
         "name": "device_id",
-        "type": "textbox",
-        "current": {"text": "00:0f:00:70:91:0a", "value": "00:0f:00:70:91:0a"},
-        "query": ""
+        "query": "SELECT DISTINCT device_id FROM default.sensor_data ORDER BY device_id",
+        "type": "query"
       }
     ]
-  }
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Sensor Overview",
+  "uid": "sensor-overview",
+  "version": 10
 }

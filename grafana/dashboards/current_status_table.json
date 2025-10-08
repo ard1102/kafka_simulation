@@ -1,0 +1,268 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "series",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 7,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": true,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "right",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "builderOptions": {
+            "aggregates": [],
+            "columns": [
+              {
+                "alias": "ts",
+                "custom": false,
+                "name": "ts",
+                "type": "DateTime64(3)"
+              },
+              {
+                "alias": "temp",
+                "custom": false,
+                "name": "temp",
+                "type": "Float64"
+              },
+              {
+                "alias": "device_id",
+                "custom": false,
+                "name": "device_id",
+                "type": "String"
+              }
+            ],
+            "database": "default",
+            "filters": [
+              {
+                "condition": "AND",
+                "filterType": "custom",
+                "key": "device_id",
+                "label": "device_id",
+                "operator": "=",
+                "type": "String",
+                "value": "00:0f:00:70:91:0a"
+              }
+            ],
+            "groupBy": [],
+            "limit": 0,
+            "meta": {},
+            "mode": "list",
+            "orderBy": [
+              {
+                "dir": "DESC",
+                "name": "ts"
+              }
+            ],
+            "queryType": "table",
+            "table": "sensor_data"
+          },
+          "editorType": "builder",
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "columns": [
+                {
+                  "hint": "time",
+                  "name": "ts",
+                  "type": "DateTime64(3)"
+                }
+              ],
+              "database": "default",
+              "filters": [
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "hint": "time",
+                  "key": "",
+                  "operator": "WITH IN DASHBOARD TIME RANGE",
+                  "type": "datetime"
+                }
+              ],
+              "limit": 1000,
+              "meta": {},
+              "mode": "list",
+              "orderBy": [
+                {
+                  "default": true,
+                  "dir": "ASC",
+                  "hint": "time",
+                  "name": ""
+                }
+              ],
+              "queryType": "timeseries",
+              "table": "sensor_data"
+            }
+          },
+          "pluginVersion": "4.11.1",
+          "query": "SELECT\n    device_id,\n    argMax(ts, ts) AS last_seen,\n    argMax(temp, ts) AS temperature,\n    argMax(humidity, ts) AS humidity,\n    argMax(co, ts) AS co,\n    argMax(smoke, ts) AS smoke,\n    argMax(lpg, ts) AS lpg,\n    argMax(motion, ts) AS motion,\n    argMax(light, ts) AS light\n FROM sensor_data\n WHERE $__timeFilter(ingest_time)\n GROUP BY device_id\n ORDER BY device_id",
+          "queryType": "table",
+          "rawSql": "SELECT ts, temp, device_id FROM \"default\".\"sensor_data\" WHERE ( device_id = '00:0f:00:70:91:0a' ) ORDER BY ts DESC",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "columns": [],
+              "database": "",
+              "limit": 1000,
+              "mode": "list",
+              "queryType": "table",
+              "table": ""
+            }
+          },
+          "pluginVersion": "4.11.1",
+          "queryType": "table",
+          "rawSql": "SELECT ts, temp, device_id FROM \"default\".\"sensor_data\" WHERE ( device_id = '1c:bf:ce:15:ec:4d' ) ORDER BY ts DESC",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "columns": [],
+              "database": "",
+              "limit": 1000,
+              "mode": "list",
+              "queryType": "table",
+              "table": ""
+            }
+          },
+          "pluginVersion": "4.11.1",
+          "queryType": "table",
+          "rawSql": "SELECT ts, temp, device_id FROM \"default\".\"sensor_data\" WHERE ( device_id = 'b8:27:eb:bf:9d:51' ) ORDER BY ts DESC",
+          "refId": "C"
+        }
+      ],
+      "title": "Current Status of All Sensors",
+      "transparent": true,
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "5s",
+  "schemaVersion": 42,
+  "tags": [
+    "sensors",
+    "current"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "2020-07-12T00:01:34.385Z",
+    "to": "2020-07-12T06:58:59.797Z"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "A. Current Status of All Sensors (Table)",
+  "uid": "current-status-table",
+  "version": 3
+}
