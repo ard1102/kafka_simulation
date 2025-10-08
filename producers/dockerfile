@@ -12,6 +12,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY producers/ ./producers/
 COPY data/ ./data/
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+# Normalize line endings (CRLF -> LF) and make executable
+RUN python - <<'PY'
+import io
+p = '/usr/local/bin/entrypoint.sh'
+with open(p, 'rb') as f:
+    data = f.read().replace(b'\r\n', b'\n')
+with open(p, 'wb') as f:
+    f.write(data)
+PY
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Default environment variables (override at runtime)

@@ -1,4 +1,5 @@
-version: "3.8"
+### Compose file format version key removed; modern Compose ignores it.
+### Keeping the file concise avoids the warning.
 
 services:
   kafka:

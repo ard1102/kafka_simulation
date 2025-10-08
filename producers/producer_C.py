@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 from kafka import KafkaProducer
-from kafka.errors import NoBrokersAvailable
+from kafka.errors import NoBrokersAvailable, KafkaTimeoutError
 
 device = 'b8:27:eb:bf:9d:51'
 
