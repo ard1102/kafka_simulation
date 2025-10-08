@@ -462,6 +462,20 @@ docker rmi <image_name>
 docker system prune -a
 ```
 
+## Compose Tips: Local images
+- If a service’s image is built locally, prevent Compose from trying to pull it from a registry by setting `pull_policy: never` alongside a `build` section.
+- Example (used for all producers):
+```yaml
+producer-a:
+  image: sensor-producer
+  build:
+    context: .
+    dockerfile: ./producers/dockerfile
+  pull_policy: never
+```
+- Use `docker compose up -d --build` to rebuild local changes and start.
+- `docker compose pull` will skip locally built producers and only pull external images (Kafka, ClickHouse, Grafana).
+
 ## Change Log (summarized from git)
 - Initialize repo and project assets (compose, entrypoint, producers, data, README)
 - Add Kafka producers and publish events to sensor_data via kafka-python
