@@ -1,119 +1,43 @@
-🎯 Mission Objective
+About Dataset url: (https://www.kaggle.com/datasets/garystafford/environmental-sensor-data-132k/data)
+Context
+Environmental sensor telemetry data, detailed in the blog post, Getting Started with IoT Analytics on AWS, published on Towards Data Science.
 
-Collect 10 high-quality resumes or detailed professional profiles of individuals currently or recently employed in Cybersecurity or Security Engineering roles at top companies, with 3–8 years of experience.
-The goal is to extract resume structure, phrasing, skills, and quantified achievements to serve as references for crafting my own resume.
+Content
+The data was generated from a series of three identical, custom-built, breadboard-based sensor arrays. Each array was connected to a Raspberry Pi devices. Each of the three IoT devices was placed in a physical location with varied environmental conditions.
 
-🕵️‍♂️ Target Profile Criteria
+| device            | environmental conditions                 |
+|-------------------|------------------------------------------|
+| 00:0f:00:70:91:0a | stable conditions, cooler and more humid |
+| 1c:bf:ce:15:ec:4d | highly variable temperature and humidity |
+| b8:27:eb:bf:9d:51 | stable conditions, warmer and dryer      |
+Each IoT device collected a total of seven different readings from the four sensors on a regular interval. Sensor readings include temperature, humidity, carbon monoxide (CO), liquid petroleum gas (LPG), smoke, light, and motion. The data spans the period from 07/12/2020 00:00:00 UTC – 07/19/2020 23:59:59 UTC. There is a total of 405,184 rows of data.
 
-Job Titles (must match at least one):
+The sensor readings, along with a unique device ID and timestamp, were published as a single message, using the ISO standard Message Queuing Telemetry Transport (MQTT) network protocol. Below is an example of an MQTT message payload.
 
-Security Engineer
-
-Cybersecurity Analyst
-
-Information Security Engineer
-
-Security Operations Engineer (SOC)
-
-Cloud Security Engineer
-
-Application Security Engineer
-
-Experience Level: 3–8 years (mid-level professionals)
-
-Companies (preferred): Google, Microsoft, Meta, AWS, Cisco, Palo Alto Networks, CrowdStrike, FireEye, Check Point, IBM, Accenture, or any recognized enterprise.
-
-Locations: Global (prefer U.S., Europe, India)
-
-Publicly Available Profiles Only (LinkedIn, portfolio sites, GitHub resumes, or personal websites)
-
-🔍 Agent Task Steps
-
-Search Query Examples
-Use the following or variations:
-
-“Security Engineer resume filetype:pdf” site:linkedin.com OR site:github.io OR site:wellfound.com
-
-"Cybersecurity Analyst resume" 3–8 years experience -fresher
-
-"Security Engineer" ("profile" OR "resume") site:medium.com OR site:about.me
-
-Open and Extract
-For each identified profile/resume:
-
-✅ Name (or alias if anonymized)
-
-✅ Current Job Title
-
-✅ Company Name
-
-✅ Years of Experience
-
-✅ Technical Skills (e.g., SIEM, SOC, IDS/IPS, Cloud Security, Incident Response, etc.)
-
-✅ Tools/Frameworks (Splunk, Wireshark, ELK, MITRE ATT&CK, etc.)
-
-✅ Notable Projects / Quantified Achievements
-
-✅ Education (Degree & University)
-
-Summarize the Resume
-For each candidate, produce a structured summary in the following format:
-
-🧑‍💻 Name: [Optional or Redacted]
-🎯 Role: [Security Engineer / Analyst]
-🏢 Company: [Company Name]
-📅 Experience: [X years]
-🔧 Core Skills: [List 6–10 key skills/tools]
-🚀 Top Achievements:
-  - [Quantified project or metric-based impact, e.g. "Reduced phishing incidents by 35% using custom email filter rules."]
-  - [Another notable security project/initiative]
-🎓 Education: [Degree, University]
-
-
-Output Format
-
-Save or return results as structured JSON or Markdown list.
-
-Include direct URLs where the resume/profile was found.
-
-⚖️ Ethical & Compliance Instructions
-
-Collect only publicly available resumes or profiles.
-
-Do not attempt to access private data or gated content.
-
-Redact personally identifying details if necessary (e.g., emails, phone numbers).
-
-Focus on career-relevant insights, not personal info.
-
-🧩 Deliverable Example
-[
-  {
-    "role": "Security Engineer",
-    "company": "Google",
-    "experience": "6 years",
-    "skills": ["SIEM", "IDS/IPS", "Python", "AWS Security", "Incident Response"],
-    "achievements": [
-      "Built internal threat detection pipelines using Splunk and Python (reduced alert false positives by 25%).",
-      "Led SOC team migration to AWS CloudWatch and GuardDuty."
-    ],
-    "education": "MS in Cybersecurity, Stanford University",
-    "source_url": "https://www.linkedin.com/in/xxxxx/"
+{
+  "data": {
+    "co": 0.006104480269226063,
+    "humidity": 55.099998474121094,
+    "light": true,
+    "lpg": 0.008895956948783413,
+    "motion": false,
+    "smoke": 0.023978358312270912,
+    "temp": 31.799999237060547
   },
-  ...
-]
+  "device_id": "6e:81:c9:d4:9e:58",
+  "ts": 1594419195.292461
+}
+Columns
+There are nine columns in the dataset.
 
-🧠 Contextual Behavior
-
-The agent should:
-
-Prioritize resume phrasing, responsibility verbs, and achievement quantification.
-
-Detect patterns in how professionals describe their security projects.
-
-Avoid collecting duplicate or irrelevant data (like sales or IT support roles).
-
-If fewer than 10 are found, expand company scope while maintaining role relevance.
-
-
+| column   | description          | units      |
+|----------|----------------------|------------|
+| ts       | timestamp of event   | epoch      |
+| device   | unique device name   | string     |
+| co       | carbon monoxide      | ppm (%)    |
+| humidity | humidity             | percentage |
+| light    | light detected?      | boolean    |
+| lpg      | liquid petroleum gas | ppm (%)    |
+| motion   | motion detected?     | boolean    |
+| smoke    | smoke                | ppm (%)    |
+| temp     | temperature          | Fahrenheit |

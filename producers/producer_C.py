@@ -7,7 +7,9 @@ import sys
 from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
 
-parser = argparse.ArgumentParser(description="Sensor producer A")
+device = 'b8:27:eb:bf:9d:51'
+
+parser = argparse.ArgumentParser(description="Sensor producer C")
 
 # Accepts either an int or the string 'all'
 parser.add_argument(
@@ -17,7 +19,7 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-device = 'b8:27:eb:bf:9d:51'
+
 data_path = './data/sensor_data.csv'
 
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "localhost:9092")
@@ -25,11 +27,23 @@ producer = None
 try:
     producer = KafkaProducer(
         bootstrap_servers=[KAFKA_BROKER],
-        value_serializer=lambda v: json.dumps(v).encode('utf-8')
+        value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+        max_block_ms=int(os.getenv("KAFKA_MAX_BLOCK_MS", "1000"))
     )
 except (NoBrokersAvailable, Exception) as e:
     print(f"⚠️ Kafka unavailable ({type(e).__name__}). Running in dry-run; events printed only.", file=sys.stderr)
     producer = None
+
+# Optional quick connectivity check; switch to dry-run if metadata unavailable
+if producer is not None:
+    try:
+        parts = producer.partitions_for('sensor_data')
+        if parts is None or len(parts) == 0:
+            print("⚠️ Kafka metadata unavailable. Switching to dry-run.", file=sys.stderr)
+            producer = None
+    except KafkaTimeoutError:
+        print("⚠️ Kafka metadata unavailable (timeout). Switching to dry-run.", file=sys.stderr)
+        producer = None
 
 # Check if file exists
 if not os.path.exists(data_path):
@@ -89,11 +103,21 @@ for _, row in df.iterrows():
     json_output["ts"] = float(row["ts"])
 
     if producer is not None:
-        producer.send('sensor_data', value=json_output)
-        print(f"Sent: {json.dumps(json_output)}")
+        try:
+            future = producer.send('sensor_data', value=json_output)
+            future.get(timeout=float(os.getenv("KAFKA_SEND_TIMEOUT_SEC", "1.0")))
+            print(f"Sent: {json.dumps(json_output)}")
+        except KafkaTimeoutError:
+            print("⚠️ Send timed out. Switching to dry-run.", file=sys.stderr)
+            print(f"[DRY-RUN] {json.dumps(json_output)}")
+            producer = None
+        except Exception as e:
+            print(f"⚠️ Send failed ({type(e).__name__}). Switching to dry-run.", file=sys.stderr)
+            print(f"[DRY-RUN] {json.dumps(json_output)}")
+            producer = None
     else:
         print(f"[DRY-RUN] {json.dumps(json_output)}")
-    time.sleep(0.2)
+    time.sleep(0.4)
 
 if producer is not None:
     producer.flush()
