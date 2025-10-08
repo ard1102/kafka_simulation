@@ -18,9 +18,134 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 4,
   "links": [],
   "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "fieldMinMax": true,
+          "mappings": [],
+          "min": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorType": "sql",
+          "format": 1,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "columns": [],
+              "database": "",
+              "limit": 1000,
+              "mode": "list",
+              "queryType": "table",
+              "table": ""
+            }
+          },
+          "pluginVersion": "4.11.1",
+          "queryType": "table",
+          "rawSql": "SELECT\r\n  toStartOfSecond(ingest_time) AS time,\r\n  device_id,\r\n  count() AS events_per_sec\r\nFROM default.sensor_data\r\nWHERE $__timeFilter(ingest_time) AND device_id='00:0f:00:70:91:0a'\r\nGROUP BY time, device_id\r\nORDER BY time",
+          "refId": "Sensor A"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "columns": [],
+              "database": "",
+              "limit": 1000,
+              "mode": "list",
+              "queryType": "table",
+              "table": ""
+            }
+          },
+          "pluginVersion": "4.11.1",
+          "queryType": "table",
+          "rawSql": "SELECT\r\n  toStartOfSecond(ingest_time) AS time,\r\n  device_id,\r\n  count() AS events_per_sec\r\nFROM default.sensor_data\r\nWHERE $__timeFilter(ingest_time) AND device_id='1c:bf:ce:15:ec:4d'\r\nGROUP BY time, device_id\r\nORDER BY time",
+          "refId": "Sensor B"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "columns": [],
+              "database": "",
+              "limit": 1000,
+              "mode": "list",
+              "queryType": "table",
+              "table": ""
+            }
+          },
+          "pluginVersion": "4.11.1",
+          "queryType": "table",
+          "rawSql": "SELECT\r\n  toStartOfSecond(ingest_time) AS time,\r\n  device_id,\r\n  count() AS events_per_sec\r\nFROM default.sensor_data\r\nWHERE $__timeFilter(ingest_time) AND device_id='b8:27:eb:bf:9d:51'\r\nGROUP BY time, device_id\r\nORDER BY time",
+          "refId": "Sensor C"
+        }
+      ],
+      "title": "Events per Sec",
+      "transparent": true,
+      "type": "stat"
+    },
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
@@ -87,7 +212,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 1,
       "options": {
@@ -179,7 +304,7 @@
         "h": 9,
         "w": 17,
         "x": 0,
-        "y": 9
+        "y": 17
       },
       "id": 2,
       "options": {
@@ -285,7 +410,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 26
       },
       "id": 6,
       "options": {
@@ -388,5 +513,5 @@
   "timezone": "browser",
   "title": "Sensor Overview",
   "uid": "sensor-overview",
-  "version": 10
+  "version": 1
 }
