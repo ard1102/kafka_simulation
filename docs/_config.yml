@@ -1,0 +1,6 @@
+theme: jekyll-theme-cayman
+title: Kafka → ClickHouse → Grafana Sensor Pipeline
+description: Simulate sensor events, ingest to ClickHouse, and visualize in Grafana.
+show_downloads: false
+github:
+  is_project_page: true
