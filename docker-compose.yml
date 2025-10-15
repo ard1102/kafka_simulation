@@ -103,9 +103,11 @@ services:
       retries: 3
 
   consumer:
+    image: kafka_simulation/consumer:latest
     build:
       context: ./consumer
       dockerfile: Dockerfile
+    pull_policy: never
     container_name: consumer
     command: ["python", "-u", "consumer.py"]
     environment:
